@@ -37,7 +37,7 @@ router.get('/:id', (req, res, next) => {
 });
 //attention, le bloc findone doit bien etre situé avant le find, sinon 404...
 
-router.use('/', (req, res, next) => {
+router.get('/', (req, res, next) => {
   Thing.find()
     .then(things => res.status(200).json(things))
     .catch(error => res.status(400).json({ error }));
