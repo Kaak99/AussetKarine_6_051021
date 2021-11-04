@@ -1,8 +1,8 @@
 console.log("***************start***************")
 
 const express = require('express');
+const path = require('path');//pour acces au chemin des fichiers
 
-const app = express();
 
 const stuffRoutes = require('./routes/stuff');
 const userRoutes = require('./routes/user');
@@ -14,6 +14,7 @@ mongoose.connect('mongodb+srv://master:master-mdp@cluster0.uyax9.mongodb.net/maB
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+const app = express();
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,6 +24,8 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());//bodyparser
+
+app.use('/images' , express.static(path.join(__dirname, 'images')));//appel pour multer(chemin images)
 
 app.use('/api/stuff', stuffRoutes);
 app.use('/api/auth', userRoutes);
