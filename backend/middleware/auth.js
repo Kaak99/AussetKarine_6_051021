@@ -1,3 +1,6 @@
+// tests (à retirer)
+console.log(` --------> auth`);
+
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {

@@ -1,3 +1,6 @@
+// tests (à retirer)
+console.log(` --------> multerconfig`);
+
 const multer = require('multer');
 
 const MIME_TYPES = {
