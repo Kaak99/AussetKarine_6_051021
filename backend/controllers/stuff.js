@@ -1,3 +1,6 @@
+// tests (à retirer)
+console.log(` --------> .js`);
+
 const Thing = require('../models/thing');
 const fs = require('fs');//package fs de node
 
