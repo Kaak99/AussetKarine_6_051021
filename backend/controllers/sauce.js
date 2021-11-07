@@ -17,19 +17,9 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.getOneSauce = (req, res, next) => {
-  Sauce.findOne({
-    _id: req.params.id
-  }).then(
-    (thing) => {
-      res.status(200).json(sauce);
-    }
-  ).catch(
-    (error) => {
-      res.status(404).json({
-        error: error
-      });
-    }
-  );
+  Sauce.findOne({_id: req.params.id})
+  .then((sauce) => { res.status(200).json(sauce)})
+  .catch((error) => {res.status(404).json({error: error})});
 };
 
 exports.modifySauce = (req, res, next) => {
@@ -44,21 +34,26 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.deleteSauce = (req, res, next) => {
-  Sauce.findOne({ _id: req.params.id })
-    .then(sauce => {
-      const filename = sauce.imageUrl.split('/images/')[1];
-      fs.unlink(`images/${filename}`, () => {
-        Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
-          .catch(error => res.status(400).json({ error }));
-      });
-    })
-    .catch(error => res.status(500).json({ error }));
+  Sauce.findOne({_id: req.params.id})
+  .then((sauce) => { res.status(200).json(sauce)})
+  .catch((error) => {res.status(404).json({error: error})});
 };
+
+/*
+console.log("123");
+//Sauce.findOne({_id: req.params.id})
+Sauce.deleteOne({_id: req.params.id})
+.then(()=>res.status(200)).json({message:"supprimé"})
+//.then((sauce) => res.status(201).json({ message: "delete" }).send(console.log(sauce)))
+//.then(() => res.status(201).json({ message: "delete" }))
+.catch((error) => {res.status(404).json({error: error})});
+}
+*/
+
 
 exports.getAllSauces = (req, res, next) => {
   Sauce.find().then(
-    (things) => {
+    (sauce) => {
       res.status(200).json(sauce);
     }
   ).catch(

@@ -1,3 +1,6 @@
+// tests (à retirer)
+console.log(` --------> user-ctrl`);
+
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');

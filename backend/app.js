@@ -36,7 +36,7 @@ app.use(express.json());//bodyparser
 
 app.use('/images' , express.static(path.join(__dirname, 'images')));//appel pour multer(chemin images)
 
-app.use('/api/stuff', sauceRoutes);//(ex stuffRoutes)
+app.use('/api/sauces', sauceRoutes);//(ex stuffRoutes)
 app.use('/api/auth', userRoutes);
 
 module.exports = app;
