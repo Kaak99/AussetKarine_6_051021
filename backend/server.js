@@ -1,4 +1,4 @@
-console.log("**********start**********");
+console.log("*********start*********");
 
 const http = require('http');
 const app = require('./app');
