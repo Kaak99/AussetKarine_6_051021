@@ -32,7 +32,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());//bodyparser
+
+//bodyparser//
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+
 
 app.use('/images' , express.static(path.join(__dirname, 'images')));//appel pour multer(chemin images)
 
