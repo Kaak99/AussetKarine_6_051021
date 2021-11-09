@@ -17,7 +17,8 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.getOneSauce = (req, res, next) => {
-  Sauce.findOne({_id: req.params.id})
+  //Sauce.findOne({_id: req.params.id})
+  Sauce.findById(req.params.id)
   .then((sauce) => { res.status(200).json(sauce)})
   .catch((error) => {res.status(404).json({error: error})});
 };
@@ -53,17 +54,13 @@ Sauce.deleteOne({_id: req.params.id})
 
 
 exports.getAllSauces = (req, res, next) => {
-  Sauce.find().then(
-    (sauce) => {
-      res.status(200).json(sauce);
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  Sauce.find()
+  .then((sauce) => { 
+    res.status(200).json(sauce);
+  })
+  .catch((error) => {
+    res.status(400).json({ error: error });
+  });
 };
 
 

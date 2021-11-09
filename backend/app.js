@@ -33,13 +33,15 @@ app.use((req, res, next) => {
 });
 
 
-//bodyparser//
+// bodyparser //
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
+// appel pour multer(chemin images) //
+app.use('/images' , express.static(path.join(__dirname, 'images')));
+app.use(express.static('images'));
 
-app.use('/images' , express.static(path.join(__dirname, 'images')));//appel pour multer(chemin images)
-
+// routes //
 app.use('/api/sauces', sauceRoutes);//(ex stuffRoutes)
 app.use('/api/auth', userRoutes);
 
