@@ -17,12 +17,10 @@ exports.modifySauce = (req, res, next) => {
 
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
-  //delete sauceObject._id;
-  let randomId = ""+ ( Math.floor(Math.random() * 999999999999999) );
-  console.log("randomId");
-  console.log(randomId);
+  //let randomId = ""+ ( Math.floor(Math.random() * 999999999999999) );
+  //console.log(randomId);
   const sauce = new Sauce({
-    //...sauceObject, 
+    //...sauceObject, //ne passe pas
     //userId : randomId,
     userId : sauceObject.userId,
     name : sauceObject.name,
@@ -31,8 +29,8 @@ exports.createSauce = (req, res, next) => {
     mainPepper : sauceObject.mainPepper,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     heat : sauceObject.heat,
-    likes : 10,
-    dislikes : 1,
+    likes : 0,
+    dislikes : 0,
     usersLiked : [],
     usersDisliked : []
   });
