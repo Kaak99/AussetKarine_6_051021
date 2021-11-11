@@ -19,21 +19,24 @@ exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   //delete sauceObject._id;
   let randomId = ""+ ( Math.floor(Math.random() * 999999999999999) );
-  console.log(randomId)
+  console.log("hello");
+  console.log(randomId);
   const sauce = new Sauce({
     //...sauceObject,
-    userId : randomId,
-    name :  "aaa",
-    manufacturer :  "aaa",
-    description :  "aaa",
-    mainPepper :  "aaa",
+    //userId : randomId,
+    userId : sauceObject.userId,
+    name : sauceObject.name,
+    manufacturer : sauceObject.manufacturer,
+    description : sauceObject.description,
+    mainPepper : sauceObject.mainPepper,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-    heat : 5,
+    heat : sauceObject.heat,
     likes : 10,
     dislikes : 1,
     usersLiked : [],
     usersDisliked : []
   });
+  console.log(sauce);
   sauce.save()
     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
     .catch(error => res.status(400).json(sauce));
