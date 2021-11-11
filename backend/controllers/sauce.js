@@ -19,10 +19,10 @@ exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   //delete sauceObject._id;
   let randomId = ""+ ( Math.floor(Math.random() * 999999999999999) );
-  console.log("hello");
+  console.log("randomId");
   console.log(randomId);
   const sauce = new Sauce({
-    //...sauceObject,
+    //...sauceObject, 
     //userId : randomId,
     userId : sauceObject.userId,
     name : sauceObject.name,
