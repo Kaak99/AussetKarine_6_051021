@@ -23,4 +23,6 @@ router.get('/:id', auth, sauceController.getOneSauce);
 router.put('/:id', auth, multer, sauceController.modifySauce);//multer ici
 router.delete('/:id', auth, sauceController.deleteSauce);
 
+router.post('/:id/like', auth, sauceController.likeDislikeSauce);
+
 module.exports = router;
