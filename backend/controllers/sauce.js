@@ -56,7 +56,7 @@ exports.createSauce = (req, res, next) => {
 
 exports.getOneSauce = (req, res, next) => {
   //Sauce.findOne({_id: req.params.id})
-  console.log(req.body);
+  console.log("Sauce choisie : "+req.params.id);
   Sauce.findById(req.params.id)
   .then((sauce) => { res.status(200).json(sauce)})
   .catch((error) => {res.status(404).json({error: error})});
@@ -103,7 +103,7 @@ exports.getAllSauces = (req, res, next) => {
 exports.likeDislikeSauce = (req, res, next) => {
   //requete : userId(req.body.userId) et code like0/1/-1 (req.body.like)//
   //reponse attendue : message string//
-  const likechange = req.body.like;//le code 0/1/-1 renvoyé par le front
+  const likeChange = req.body.like;//le code 0/1/-1 renvoyé par le front
   const userId = req.body.userId;//le user qui veut liker/disliker
   const sauceId = req.params.id;  //la sauce d'ou part la requete
 
@@ -111,21 +111,21 @@ exports.likeDislikeSauce = (req, res, next) => {
   // et la reponse 0 1 -1 est la synthése de touets les possibilités
 
   // cas 1 : userId a liké (et n'avait pas liké ou disliké avant)
-  if (likechange=== 1) {
+  if (likeChange=== 1) {
     Sauce.updateOne({_id: sauceId},{ $inc: {likes : +1}, $push: {usersLiked : userId}}) 
       .then( () => res.status(200).json({message : " sauce likée"}))
       .catch((error) => res.status(400).json({error}) )
   }
 
   // cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)
-  if (likechange=== -1) {
+  if (likeChange=== -1) {
     Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : +1}, $push: {usersDisliked : userId}}) 
       .then( () => res.status(200).json({message : " sauce dislikée"}))
       .catch((error) => res.status(400).json({error}) )
   }
 
    // cas 3 : userId avait liké ou disliké avant et vient d'annuler son like/dislike précedent
-   if (likechange=== 0) {
+   if (likeChange=== 0) {
     Sauce.findOne({_id: sauceId})
       .then( (sauce) => {
         if (sauce.usersLiked.includes(userId)) {//si son vote précédent == like
@@ -141,7 +141,14 @@ exports.likeDislikeSauce = (req, res, next) => {
       })
   }
 
-
+  /*note
+  else{
+    //res.end("probleme inconnu rencontré sur les like/dislike");
+    //res.status(500).json({message: 'probleme inconnu sur like/dislike'});
+    console.log(req.body);
+    res.status(500).send("pb");
+  }
+  */
 
 };
 
