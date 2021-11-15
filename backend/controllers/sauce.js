@@ -4,9 +4,13 @@ console.log(` --------> sauce-ctrl`);
 const Sauce = require('../models/Sauce');
 const fs = require('fs');//package fs de node
 
+
+//__         MODIFY SAUCE  (PUT+id sauce)                    __//
+//__ recoit : Sauce as JSON OR { sauce:String,image: File }  __//
+//__ renvoie : { message: String }                           __//
+
 exports.modifySauce = (req, res, next) => {
-  const sauceObject = req.file ?
-    {
+  const sauceObject = req.file ? {
       ...JSON.parse(req.body.sauce),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
@@ -14,6 +18,11 @@ exports.modifySauce = (req, res, next) => {
     .then(() => res.status(200).json({ message: 'Objet modifié !'}))
     .catch(error => res.status(400).json({ error }));
 };
+
+
+//__        CREATE SAUCE (POST)              __//
+//__ recoit : { sauce: String, image: File } __//
+//__ renvoie : { message: String }           __//
 
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
@@ -41,6 +50,10 @@ exports.createSauce = (req, res, next) => {
 };
 
 
+//__     GET ONE SAUCE (GET+id sauce)      __//
+//__ recoit : -                            __//
+//__ renvoie : la sauce avec l’_id fourni  __//
+
 exports.getOneSauce = (req, res, next) => {
   //Sauce.findOne({_id: req.params.id})
   console.log(req.body);
@@ -49,6 +62,10 @@ exports.getOneSauce = (req, res, next) => {
   .catch((error) => {res.status(404).json({error: error})});
 };
 
+
+//__   DELETE SAUCE (DELETE+ id sauce)  __//
+//__ recoit : -                         __//
+//__ renvoie { message: String }        __//
 
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
@@ -64,6 +81,9 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 
+//__          GET ALL SAUCE (GET)            __//
+//__ recoit : -                              __//
+//__ renvoie : tableau de toutes les sauces  __//
 
 exports.getAllSauces = (req, res, next) => {
   Sauce.find()
@@ -76,23 +96,62 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 
+//__    LIKES&DISLIKES SAUCE (POST+id sauce)    __//
+//__ recoit : { userId: String, like: Number }  __//
+//__ renvoie : { message: String }              __//
+
 exports.likeDislikeSauce = (req, res, next) => {
-  const sauceObject = req.body.like;
-  //console.log(req.body);
-  //console.log(req.body.like);
-  //console.log(req.req.params.id);
-  //console.log(sauceObjet);
-  
-  // Sauce.updateOne({ _id: req.params.id },{...sauceObject,
-  //     likes: sauceObject.likes,
-  //     dislikes: sauceObject.dislikes,
-  //     usersDisliked: sauceObject.usersDisliked,
-  //     usersLiked: sauceObject.usersLiked }
-  //)
-  Sauce.findOne({ _id: req.params.id })
-  .then(() => res.status(200).json({ message: 'yo'}))
-  .catch(error => res.status(400).json({ error: req.body}));
+  //requete : userId(req.body.userId) et code like0/1/-1 (req.body.like)//
+  //reponse attendue : message string//
+  const likechange = req.body.like;//le code 0/1/-1 renvoyé par le front
+  const userId = req.body.userId;//le user qui veut liker/disliker
+  const sauceId = req.params.id;  //la sauce d'ou part la requete
+
+  //3 cas, sous entend que front deja regardé si user avait liké disliké avant ou non
+  // et la reponse 0 1 -1 est la synthése de touets les possibilités
+
+  // cas 1 : userId a liké (et n'avait pas liké ou disliké avant)
+  if (likechange=== 1) {
+    Sauce.updateOne({_id: sauceId},{ $inc: {likes : +1}, $push: {usersLiked : userId}}) 
+      .then( () => res.status(200).json({message : " sauce likée"}))
+      .catch((error) => res.status(400).json({error}) )
+  }
+
+  // cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)
+  if (likechange=== -1) {
+    Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : +1}, $push: {usersDisliked : userId}}) 
+      .then( () => res.status(200).json({message : " sauce dislikée"}))
+      .catch((error) => res.status(400).json({error}) )
+  }
+
+   // cas 3 : userId avait liké ou disliké avant et vient d'annuler son like/dislike précedent
+   if (likechange=== 0) {
+    Sauce.findOne({_id: sauceId})
+      .then( (sauce) => {
+        if (sauce.usersLiked.includes(userId)) {//si son vote précédent == like
+          Sauce.updateOne({_id: sauceId},{ $inc: {likes : -1}, $pull: {usersLiked : userId}}) 
+      .then( () => res.status(200).json({message : "like retiré"}))//on le retire
+      .catch((error) => res.status(400).json({error}) )
+        }
+        if (sauce.usersDisliked.includes(userId)) {//si son vote précédent == dislike
+          Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : -1}, $pull: {usersDisliked : userId}}) 
+          .then( () => res.status(200).json({message : "dislike retiré"}))//on le retire
+          .catch((error) => res.status(400).json({error}) )
+        }
+      })
+  }
+
+
+
 };
+
+
+
+
+
+
+
+
 
 
 /*
@@ -109,6 +168,12 @@ exports.modifySauce = (req, res, next) => {
 };
 */
 
+
+
+//pour voir le contenu de la requete//
+/*exports.xxxSauce = (req, res, next) => {
+console.log(req.body);
+res.status(201).json({message: 'from xxxSauce!'});}*/
 
 
 
