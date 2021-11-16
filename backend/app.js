@@ -5,6 +5,7 @@ console.log(` --------> app.js`);
 const express = require('express');
 const path = require('path');//pour acces au chemin des fichiers
 
+const morgan = require('morgan');//log requetes
 
 const userRoutes = require('./routes/user');//routes user
 const sauceRoutes = require('./routes/sauce');//routes sauce (ex stuffRoutes)
@@ -23,6 +24,9 @@ const app = express();
 
 
 // -----------route générale : ---------------//
+
+//MORGAN (module qui log req et res)
+app.use(morgan("dev"));
 
 //CORS
 app.use((req, res, next) => {
