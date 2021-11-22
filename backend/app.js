@@ -4,7 +4,9 @@ console.log(` --------> app.js`);
 
 const express = require('express');
 const path = require('path');//pour acces au chemin des fichiers
-const dotenv = require("dotenv").config();//import variables d'environnement
+//const dotenv = require("dotenv").config();//import variables d'environnement
+const dotenv = require("dotenv");
+const result = dotenv.config();
 const morgan = require('morgan');//log requetes
 
 const userRoutes = require('./routes/user');//routes user
@@ -12,7 +14,7 @@ const sauceRoutes = require('./routes/sauce');//routes sauce (ex stuffRoutes)
 
 
 //bdd
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 mongoose.connect(`mongodb+srv://${process.env.DB_USERPASS}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
