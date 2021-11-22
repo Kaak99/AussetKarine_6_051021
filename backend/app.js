@@ -3,6 +3,7 @@ console.log(` --------> app.js`);
 
 
 const express = require('express');
+const helmet = require("helmet");//helmet pour protéger de différentes attaques
 const path = require('path');//pour acces au chemin des fichiers
 //const dotenv = require("dotenv").config();//import variables d'environnement
 const dotenv = require("dotenv");
@@ -24,6 +25,8 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERPASS}@${process.env.DB_CLUS
 
 
 const app = express(); 
+
+app.use(helmet());//lance helmet
 
 
 // -----------route générale : ---------------//
