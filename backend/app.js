@@ -4,7 +4,7 @@ console.log(` --------> app.js`);
 
 const express = require('express');
 const path = require('path');//pour acces au chemin des fichiers
-
+//const dotenv = require("dotenv").config();//import variables d'environnement
 const morgan = require('morgan');//log requetes
 
 const userRoutes = require('./routes/user');//routes user
@@ -13,12 +13,13 @@ const sauceRoutes = require('./routes/sauce');//routes sauce (ex stuffRoutes)
 
 //bdd
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://master:master-mdp@cluster0.vd2gi.mongodb.net/maBdd?retryWrites=true&w=majority',
+mongoose.connect("mongodb+srv://master:master-mdp@cluster0.vd2gi.mongodb.net/maBdd?retryWrites=true&w=majority",
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+//'mongodb+srv://master:master-mdp@cluster0.vd2gi.mongodb.net/maBdd?retryWrites=true&w=majority'
 
 const app = express();
 
