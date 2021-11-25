@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
   try {
+    // requete>headers>authorization contient : "Bearer chiffresdutoken" (ou parfois Bearer undefined quand pas de token, exemple=req login)
+    //il faut splitter et prendre la donnée apres l'espace (pas 0 mais 1 donc)
     const token = req.headers.authorization.split(' ')[1];
     //const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);

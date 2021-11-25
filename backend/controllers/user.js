@@ -38,6 +38,11 @@ exports.login = (req, res, next) => {
               { userId: user._id },
               process.env.JWT_SECRET_TOKEN,
               { expiresIn: '24h' }
+              //token contenant userId+expiration est envoyé au front lors login (avec useirId ; c'est le "payload")
+              //token contiendra avec le payload(=info à transmettre) un header et une signature
+              // (signature=issue de , au moyen de clé privé JWT_SECRET_TOKEN )
+              //ainsi toute modif de [header+payload] va changer la signature
+              //(token controle 1/ l'authentification (remplace login/mdp) 2/son intégrité)
             )
           });
         })

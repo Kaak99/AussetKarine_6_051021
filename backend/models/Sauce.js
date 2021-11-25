@@ -1,3 +1,7 @@
+// tests (à retirer)
+console.log(` --------> Modele:Sauce`);
+
+
 const mongoose = require('mongoose');
 
 //------schémas pour les sauces-----//
