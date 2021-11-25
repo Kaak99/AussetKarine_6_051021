@@ -1,8 +1,10 @@
 // tests (à retirer)
 console.log(` --------> multerconfig`);
+// multer pour la manipulation des fichiers
 
 const multer = require('multer');
 
+//on limite les fichiers accessibles (sécurité, contre les exe)
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',

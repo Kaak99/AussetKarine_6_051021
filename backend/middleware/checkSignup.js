@@ -1,5 +1,7 @@
 // tests (à retirer)
 console.log(` --------> checksignUp`);
+// pour checker la solidité du mot de passe
+// (et checker l'entrée mail)
 
 module.exports = (req, res, next) => {
   const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;

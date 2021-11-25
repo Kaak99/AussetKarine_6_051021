@@ -1,5 +1,7 @@
 // tests (à retirer)
 console.log(` --------> auth`);
+// pour checker l'authentfication de l'user à etre là
+//montrer son token évite de relogin à chaque demande
 
 const jwt = require('jsonwebtoken');
 

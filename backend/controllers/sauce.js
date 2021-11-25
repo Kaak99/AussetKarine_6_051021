@@ -47,6 +47,8 @@ exports.createSauce = (req, res, next) => {
   sauce.save()
     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
     .catch(error => res.status(400).json(error.message));
+    //.catch(error => res.status(400).json({error}));
+    //.catch(error => res.status(400).json(sauce));
 };
 
 
