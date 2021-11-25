@@ -10,14 +10,27 @@ const fs = require('fs');//package fs de node
 //__ renvoie : { message: String }                           __//
 
 exports.modifySauce = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id })
+  .then(sauce => {
+    if (!sauce){
+      res.status(404).json({error: new Error("Sauce not found")});
+    }
+    if (sauce.userId!==req.auth.userId){
+      res.status(401).json({error: new Error("vous n'etes pas autorisé à modifié cette sauce")});//la sauce d'un autre!
+    }
   const sauceObject = req.file ? {
       ...JSON.parse(req.body.sauce),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
   Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
     .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-    .catch(error => res.status(400).json({ error }));
-};
+    //.catch(error => res.status(400).json({ error }));
+    .catch(error => res.status(400).json(error.message));
+    })  
+  .catch(error => res.status(400).json(error.message));
+
+}
+
 
 
 //__        CREATE SAUCE (POST)              __//
@@ -74,10 +87,10 @@ exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
       if (!sauce){
-        res.status(404).json({error: new Error("Sauce not found")});
+        res.status(404).json({message : "Sauce not found"});
       }
-      if (sauce.userId!==req.auth.userId){
-        res.status(401).json({error: new Error("vous n'etes pas autorisé à effacer cette sauce")});//la sauce d'un autre!
+      if (sauce!==req.auth.userId){
+        res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//la sauce d'un autre!
       }
 
       const filename = sauce.imageUrl.split('/images/')[1];
@@ -87,7 +100,8 @@ exports.deleteSauce = (req, res, next) => {
           .catch(error => res.status(400).json({ error }));
       });
     })
-    .catch(error => res.status(500).json({ error }));
+    //.catch(error => res.status(500).json({error: new Error("on a un sacré probleme!")}));
+    .catch(error => res.status(500).json(error.message));
 };
 // exports.deleteSauce = (req, res, next) => {
 //   Sauce.findOne({ _id: req.params.id })
