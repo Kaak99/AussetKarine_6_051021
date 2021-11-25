@@ -69,18 +69,38 @@ exports.getOneSauce = (req, res, next) => {
 //__ recoit : -                         __//
 //__ renvoie { message: String }        __//
 
+
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
+      if (!sauce){
+        res.status(404).json({error: new Error("Sauce not found")});
+      }
+      if (sauce.userId!==req.auth.userId){
+        res.status(401).json({error: new Error("vous n'etes pas autorisé à effacer cette sauce")});//la sauce d'un autre!
+      }
+
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+          .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
           .catch(error => res.status(400).json({ error }));
       });
     })
     .catch(error => res.status(500).json({ error }));
 };
+// exports.deleteSauce = (req, res, next) => {
+//   Sauce.findOne({ _id: req.params.id })
+//     .then(sauce => {
+//       const filename = sauce.imageUrl.split('/images/')[1];
+//       fs.unlink(`images/${filename}`, () => {
+//         Sauce.deleteOne({ _id: req.params.id })
+//           .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+//           .catch(error => res.status(400).json({ error }));
+//       });
+//     })
+//     .catch(error => res.status(500).json({ error }));
+// };
 
 
 //__          GET ALL SAUCE (GET)            __//
@@ -147,18 +167,7 @@ exports.likeDislikeSauce = (req, res, next) => {
           }
         })
     }
-    /*note
-    if (likeChange=== undefined) {
-      console.log(req.body.like);
-      res.status(500).send("undefined");
-    }
-    else{
-      //res.end("probleme inconnu rencontré sur les like/dislike");
-      //res.status(500).json({message: 'probleme inconnu sur like/dislike'});
-      console.log(req.body);
-      res.status(500).send("pb");
-    }
-    */
+
   }
   catch{error =>{
     console.log(req.body);
