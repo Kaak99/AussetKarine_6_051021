@@ -65,16 +65,16 @@ exports.createSauce = (req, res, next) => {
     usersDisliked : []
   });
   console.log(sauce);
-  //if (sauceObject.userId === req.token.userId) {
+  if (sauce.userId === req.token.userId){
     sauce.save()
-    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+    .then(() => res.status(201).json({ message: 'Sauce enregistrée !'}))
     .catch(error => res.status(400).json(error.message));
     //.catch(error => res.status(400).json({error}));
     //.catch(error => res.status(400).json(sauce));
-  // }
-  // else{
-  //   res.status(401).json({ error: "userId différe de celui du token" });
-  // }
+  }
+  else{
+    res.status(401).json({ error: "userId usurpé : impossible de créer" });
+  }
   
 };
 
