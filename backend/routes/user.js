@@ -1,5 +1,5 @@
 // tests (à retirer)
-console.log(` --------> user-route`);
+console.log(` ----> user-route`);
 
 const express = require('express');
 const router = express.Router();

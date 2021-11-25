@@ -1,5 +1,5 @@
 // tests (à retirer)
-console.log(` --------> sauce-route`);
+console.log(` ----> sauce-route`);
 
 const express = require('express');
 const router = express.Router();
