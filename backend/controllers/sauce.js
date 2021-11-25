@@ -103,12 +103,7 @@ exports.deleteSauce = (req, res, next) => {
   console.log(req.token.userId);
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
-      if (!sauce){
-        res.status(404).json({message : "Sauce not found"});
-      }
-      if (sauce.userId !== req.token.userId){
-        res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//la sauce d'un autre!
-      }
+      if (sauce.userId === req.token.userId){
       console.log("ici!!!!!!!!!!!!!!!!!!!!!!");
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
@@ -116,8 +111,11 @@ exports.deleteSauce = (req, res, next) => {
           .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
           .catch(error => res.status(400).json({ error }));
       });
+      }
+      else{
+        res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//car la sauce d'un autre!
+      }
     })
-    //.catch(error => res.status(500).json({error: new Error("on a un sacré probleme!")}));
     .catch(error => res.status(500).json(error.message));
 };
 
