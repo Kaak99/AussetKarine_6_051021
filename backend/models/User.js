@@ -2,12 +2,7 @@
 console.log(` --------> Modele:User`);
 
 const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
-const {isEmail} = require('validator');
-const {isAlphanumeric} = require('validator');
-const {isStrongPassword} = require('validator');
-const {black_list} = require('validator');
-const {whitelist} = require('validator');
+const uniqueValidator = require('mongoose-unique-validator');//necessaire pour un seul email
 
 
 const userSchema = mongoose.Schema({
@@ -17,8 +12,7 @@ const userSchema = mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    minlength: [10, "minimum 10 caracteres"],
-    validate: isEmail},
+    minlength: [10, "minimum 10 caracteres"]},
   password: {
     type: String,
     required: true,
