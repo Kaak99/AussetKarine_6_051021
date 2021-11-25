@@ -12,23 +12,22 @@ const fs = require('fs');//package fs de node
 exports.modifySauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
   .then(sauce => {
-    if (!sauce){
-      res.status(404).json({error: new Error("Sauce not found")});
-    }
-    if (sauce.userId!==req.auth.userId){
-      res.status(401).json({error: new Error("vous n'etes pas autorisé à modifié cette sauce")});//la sauce d'un autre!
-    }
-  const sauceObject = req.file ? {
+      const sauceObject = req.file ? {
       ...JSON.parse(req.body.sauce),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-    //.catch(error => res.status(400).json({ error }));
-    .catch(error => res.status(400).json(error.message));
-    })  
+    
+    if (sauce.userId === req.token.userId){
+      Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+      .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+      //.catch(error => res.status(400).json({ error }));
+      .catch(error => res.status(400).json(error.message));
+    }
+    else{
+      res.status(401).json({message : "vous n'etes pas autorisé à modifier cette sauce"});//car la sauce d'un autre!
+    }
+  })  
   .catch(error => res.status(400).json(error.message));
-
 }
 
 
@@ -99,12 +98,12 @@ exports.getOneSauce = (req, res, next) => {
 
 
 exports.deleteSauce = (req, res, next) => {
-  console.log("idToken");
-  console.log(req.token.userId);
+  // console.log("idToken");
+  // console.log(req.token.userId);
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
       if (sauce.userId === req.token.userId){
-      console.log("ici!!!!!!!!!!!!!!!!!!!!!!");
+      //console.log("ici!!!!!!!!!!!!!!!!!!!!!!");
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
