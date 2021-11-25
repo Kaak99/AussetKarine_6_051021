@@ -41,6 +41,15 @@ exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   //let randomId = ""+ ( Math.floor(Math.random() * 999999999999999) );
   //console.log(randomId);
+  console.log("userId de demande");
+  console.log(sauceObject.userId);
+  console.log("idToken");
+  console.log(req.token.userId);
+  
+  // if (sauceObject.userId === req.token.userId) {
+  //   res.status(400).json({message:"pas permis"});
+  // }
+
   const sauce = new Sauce({
     //...sauceObject, //ne passe pas
     //userId : randomId,
@@ -57,11 +66,17 @@ exports.createSauce = (req, res, next) => {
     usersDisliked : []
   });
   console.log(sauce);
-  sauce.save()
+  //if (sauceObject.userId === req.token.userId) {
+    sauce.save()
     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
     .catch(error => res.status(400).json(error.message));
     //.catch(error => res.status(400).json({error}));
     //.catch(error => res.status(400).json(sauce));
+  // }
+  // else{
+  //   res.status(401).json({ error: "userId différe de celui du token" });
+  // }
+  
 };
 
 
@@ -84,15 +99,17 @@ exports.getOneSauce = (req, res, next) => {
 
 
 exports.deleteSauce = (req, res, next) => {
+  console.log("idToken");
+  console.log(req.token.userId);
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
       if (!sauce){
         res.status(404).json({message : "Sauce not found"});
       }
-      if (sauce!==req.auth.userId){
+      if (sauce.userId !== req.token.userId){
         res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//la sauce d'un autre!
       }
-
+      console.log("ici!!!!!!!!!!!!!!!!!!!!!!");
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
@@ -103,6 +120,32 @@ exports.deleteSauce = (req, res, next) => {
     //.catch(error => res.status(500).json({error: new Error("on a un sacré probleme!")}));
     .catch(error => res.status(500).json(error.message));
 };
+
+  //le foireux avec verif
+//   console.log("idToken");
+//   //console.log(req.token.userId);
+//   Sauce.findOne({ _id: req.params.id })
+//     .then(sauce => {
+//       if (!sauce){
+//         res.status(404).json({message : "Sauce not found"});
+//       }
+//       // if (sauce!==req.auth.userId){
+//       //   res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//la sauce d'un autre!
+//       // }
+
+//       const filename = sauce.imageUrl.split('/images/')[1];
+//       fs.unlink(`images/${filename}`, () => {
+//         Sauce.deleteOne({ _id: req.params.id })
+//           .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
+//           .catch(error => res.status(400).json({ error }));
+//       });
+//     })
+//     //.catch(error => res.status(500).json({error: new Error("on a un sacré probleme!")}));
+//     .catch(error => res.status(500).json(error.message));
+// };
+
+
+//le bon, sans verif
 // exports.deleteSauce = (req, res, next) => {
 //   Sauce.findOne({ _id: req.params.id })
 //     .then(sauce => {
