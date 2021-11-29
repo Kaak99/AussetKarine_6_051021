@@ -1,15 +1,28 @@
 // tests (à retirer)
 console.log(` --------> user-ctrl`);
 
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-//const dotenv = require("dotenv").config();
+//-----imports-----//
 
+const User = require('../models/User');//importe le modele
+const bcrypt = require('bcrypt');//(hash mdp)
+//const cryptojs = require("crypto-js");//(chiffrage pour emails)
+const jwt = require('jsonwebtoken');
+//const dotenv = require("dotenv").config();//import variables d'environnement
+
+
+//-----exports-----//
+
+
+//1.signup : on va enregistrer l'utilisateur dans la bdd
 exports.signup = (req, res, next) => {
+    //chiffrage email
+  //const emailCryptoJs = cryptojs.HmacSHA256(req.body.email, `${process.env.CRYPTOJS_EMAIL}`).toString();//si chiffrage mail!
+  //console.log(process.env.CRYPTOJS_EMAIL);
+    //hashage mdp //
   bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
+        //email: emailCryptoJs,//si chiffrage mail!
         email: req.body.email,
         password: hash
       });
@@ -20,17 +33,25 @@ exports.signup = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
+//2.login :
 exports.login = (req, res, next) => {
+    //chiffrage email//
+  //const emailCryptoJs = cryptojs.HmacSHA256(req.body.email, `${process.env.CRYPTOJS_EMAIL}`).toString();//si chiffrage mail!
+  //console.log(emailCryptoJs);
+    //chercher si email existe dans bdd //
+  //User.findOne({email:emailCryptoJs})//si chiffrage mail!
   User.findOne({ email: req.body.email })
     .then(user => {
-      if (!user) {
+      if (!user) {//si pas trouvé
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });
       }
+      // si trouvé //
       bcrypt.compare(req.body.password, user.password)
         .then(valid => {
-          if (!valid) {
+          if (!valid) {//si mdp pas valide
             return res.status(401).json({ error: 'Mot de passe incorrect !' });
           }
+          //si mdp valide //
           console.log("welcome back user "+user._id+" !");
           res.status(200).json({
             userId: user._id,
