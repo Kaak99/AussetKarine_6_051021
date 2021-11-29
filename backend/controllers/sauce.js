@@ -5,9 +5,9 @@ const Sauce = require('../models/Sauce');
 const fs = require('fs');//package fs de node
 
 
-//__         MODIFY SAUCE  (PUT+id sauce)                    __//
-//__ recoit : Sauce as JSON OR { sauce:String,image: File }  __//
-//__ renvoie : { message: String }                           __//
+//!__         MODIFY SAUCE  (PUT+id sauce)                    __//
+//!__ recoit : Sauce as JSON OR { sauce:String,image: File }  __//
+//!__ renvoie : { message: String }                           __//
 
 exports.modifySauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
@@ -24,7 +24,7 @@ exports.modifySauce = (req, res, next) => {
       .catch(error => res.status(400).json(error.message));
     }
     else{
-      res.status(401).json({message : "vous n'etes pas autorisé à modifier cette sauce"});//car la sauce d'un autre!
+      res.status(403).json({message : "vous n'etes pas autorisé à modifier cette sauce"});//car la sauce d'un autre!
     }
   })  
   .catch(error => res.status(400).json(error.message));
@@ -32,26 +32,18 @@ exports.modifySauce = (req, res, next) => {
 
 
 
-//__        CREATE SAUCE (POST)              __//
-//__ recoit : { sauce: String, image: File } __//
-//__ renvoie : { message: String }           __//
+//!__        CREATE SAUCE (POST)              __//
+//!__ recoit : { sauce: String, image: File } __//
+//!__ renvoie : { message: String }           __//
 
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
-  //let randomId = ""+ ( Math.floor(Math.random() * 999999999999999) );
-  //console.log(randomId);
   console.log("userId de demande");
   console.log(sauceObject.userId);
   console.log("idToken");
   console.log(req.token.userId);
   
-  // if (sauceObject.userId === req.token.userId) {
-  //   res.status(400).json({message:"pas permis"});
-  // }
-
   const sauce = new Sauce({
-    //...sauceObject, //ne passe pas
-    //userId : randomId,
     userId : sauceObject.userId,
     name : sauceObject.name,
     manufacturer : sauceObject.manufacturer,
@@ -73,15 +65,15 @@ exports.createSauce = (req, res, next) => {
     //.catch(error => res.status(400).json(sauce));
   }
   else{
-    res.status(401).json({ error: "userId usurpé : impossible de créer" });
+    res.status(403).json({ error: "userId usurpé : impossible de créer" });
   }
   
 };
 
 
-//__     GET ONE SAUCE (GET+id sauce)      __//
-//__ recoit : -                            __//
-//__ renvoie : la sauce avec l’_id fourni  __//
+//!__     GET ONE SAUCE (GET+id sauce)      __//
+//!__ recoit : -                            __//
+//!__ renvoie : la sauce avec l’_id fourni  __//
 
 exports.getOneSauce = (req, res, next) => {
   //Sauce.findOne({_id: req.params.id})
@@ -92,9 +84,9 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 
-//__   DELETE SAUCE (DELETE+ id sauce)  __//
-//__ recoit : -                         __//
-//__ renvoie { message: String }        __//
+//!__   DELETE SAUCE (DELETE+ id sauce)   __//
+//!__ recoit : -                          __//
+//!__ renvoie { message: String }         __//
 
 
 exports.deleteSauce = (req, res, next) => {
@@ -103,7 +95,6 @@ exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
       if (sauce.userId === req.token.userId){
-      //console.log("ici!!!!!!!!!!!!!!!!!!!!!!");
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
@@ -112,54 +103,18 @@ exports.deleteSauce = (req, res, next) => {
       });
       }
       else{
-        res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//car la sauce d'un autre!
+        res.status(403).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//car la sauce d'un autre!
       }
     })
     .catch(error => res.status(500).json(error.message));
 };
 
-  //le foireux avec verif
-//   console.log("idToken");
-//   //console.log(req.token.userId);
-//   Sauce.findOne({ _id: req.params.id })
-//     .then(sauce => {
-//       if (!sauce){
-//         res.status(404).json({message : "Sauce not found"});
-//       }
-//       // if (sauce!==req.auth.userId){
-//       //   res.status(401).json({message : "vous n'etes pas autorisé à effacer cette sauce"});//la sauce d'un autre!
-//       // }
-
-//       const filename = sauce.imageUrl.split('/images/')[1];
-//       fs.unlink(`images/${filename}`, () => {
-//         Sauce.deleteOne({ _id: req.params.id })
-//           .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
-//           .catch(error => res.status(400).json({ error }));
-//       });
-//     })
-//     //.catch(error => res.status(500).json({error: new Error("on a un sacré probleme!")}));
-//     .catch(error => res.status(500).json(error.message));
-// };
 
 
-//le bon, sans verif
-// exports.deleteSauce = (req, res, next) => {
-//   Sauce.findOne({ _id: req.params.id })
-//     .then(sauce => {
-//       const filename = sauce.imageUrl.split('/images/')[1];
-//       fs.unlink(`images/${filename}`, () => {
-//         Sauce.deleteOne({ _id: req.params.id })
-//           .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
-//           .catch(error => res.status(400).json({ error }));
-//       });
-//     })
-//     .catch(error => res.status(500).json({ error }));
-// };
 
-
-//__          GET ALL SAUCE (GET)            __//
-//__ recoit : -                              __//
-//__ renvoie : tableau de toutes les sauces  __//
+//!__          GET ALL SAUCE (GET)            __//
+//!__ recoit : -                              __//
+//!__ renvoie : tableau de toutes les sauces  __//
 
 exports.getAllSauces = (req, res, next) => {
   Sauce.find()
@@ -172,9 +127,9 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 
-//__    LIKES&DISLIKES SAUCE (POST+id sauce)    __//
-//__ recoit : { userId: String, like: Number }  __//
-//__ renvoie : { message: String }              __//
+//!__    LIKES&DISLIKES SAUCE (POST+id sauce)    __//
+//!__ recoit : { userId: String, like: Number }  __//
+//!__ renvoie : { message: String }              __//
 
 exports.likeDislikeSauce = (req, res, next) => {
   //requete : userId(req.body.userId) et code like0/1/-1 (req.body.like)//
@@ -191,21 +146,21 @@ exports.likeDislikeSauce = (req, res, next) => {
   // sous entend que le front deja regardé si user avait liké disliké avant ou non
   // et la reponse 0 1 -1 est la synthése de toutes les possibilités
   try{
-    // cas 1 : userId a liké (et n'avait pas liké ou disliké avant)
+    //! cas 1 : userId a liké (et n'avait pas liké ou disliké avant)//
     if (likeChange=== 1) {
       Sauce.updateOne({_id: sauceId},{ $inc: {likes : +1}, $push: {usersLiked : userId}}) 
         .then( () => res.status(200).json({message : " sauce likée"}))
         .catch((error) => res.status(400).json({error}) )
     }
 
-    // cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)
+    //! cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)//
     if (likeChange=== (-1)) {
       Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : +1}, $push: {usersDisliked : userId}}) 
         .then( () => res.status(200).json({message : " sauce dislikée"}))
         .catch((error) => res.status(400).json({error}) )
     }
 
-    // cas 3 : userId avait liké ou disliké avant et vient d'annuler son like/dislike précedent
+    //! cas 3 : userId avait liké ou disliké avant et vient d'annuler son like/dislike précedent//
     if (likeChange=== 0) {
       Sauce.findOne({_id: sauceId})
         .then( (sauce) => {
@@ -240,19 +195,7 @@ exports.likeDislikeSauce = (req, res, next) => {
 
 
 
-/*
 
-exports.modifySauce = (req, res, next) => {
-  const sauceObject = req.file ?
-    {
-      ...JSON.parse(req.body.sauce),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-    .catch(error => res.status(400).json({ error }));
-};
-*/
 
 
 
@@ -280,7 +223,5 @@ res.status(201).json({message: 'from xxxSauce!'});}*/
     ...req.body,
     _id: req.params.id
   });
-
-
 
 */

@@ -12,11 +12,13 @@ const userSchema = mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    minlength: [10, "minimum 10 caracteres"]},
+    maxlength:1024,
+    minlength: [10, "minimum 10 caracteres"]
+  },
   password: {
     type: String,
     required: true,
-    minlength: [6, "minimum 6 caracteres"],
+    minlength: [8, "minimum 8 caracteres"],
     maxlength:1024
     }
 });

@@ -17,10 +17,7 @@ module.exports = (req, res, next) => {
 
     // ! on decode le token avec verify//
     // ! bonus : on stocke token decodé dans req pour y avoir acces + tard//
-    //const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-    //const decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
     req.token = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
-    //const userId = decodedToken.userId;
     const userId = req.token.userId;
     if (req.body.userId && req.body.userId !== userId) {
       throw 'Invalid user ID';

@@ -8,11 +8,9 @@ const noForbiddenChar = function(data){
   testChar= /[$\/<=>;]/.test(data);
   return(!testChar)
 }
-
-
 //const noForbiddenChar = entry => /[$\/<>;]/.test(entry) ? false : true
 
-//------schémas pour les sauces-----//
+//!------schémas pour les sauces-----//
 const sauceSchema = mongoose.Schema({
   userId : { type: String, required: true },
   name : { type: String, required: true, maxLength:20, trim:true, validate:[noForbiddenChar,"characteres interdits"]},

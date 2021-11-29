@@ -14,6 +14,7 @@ const dotenv = require("dotenv").config();//import variables d'environnement
 
 
 //! 1.signup : on va enregistrer l'utilisateur dans la bdd
+//--------------------------------------------------------//
 exports.signup = (req, res, next) => {
   // ! chiffrage email ! //
   const emailCryptoJs = cryptojs.HmacSHA256(req.body.email, process.env.CRYPTOJS_EMAIL).toString();//si chiffrage mail!
@@ -33,7 +34,9 @@ exports.signup = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
+
 //! 2.login :
+//---------//
 exports.login = (req, res, next) => {
   // ! chiffrage email ! //
   const emailCryptoJs = cryptojs.HmacSHA256(req.body.email, process.env.CRYPTOJS_EMAIL).toString();//si chiffrage mail!
