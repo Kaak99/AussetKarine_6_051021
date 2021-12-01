@@ -137,53 +137,97 @@ exports.likeDislikeSauce = (req, res, next) => {
   const likeChange = req.body.like;//le code 0/1/-1 renvoyé par le front
   const userId = req.body.userId;//le user qui veut liker/disliker
   const sauceId = req.params.id;  //la sauce d'ou part la requete
-  // console.log("--------------------------------");
-  // console.log(likeChange);
-  // console.log(userId);
-  // console.log(sauceId);
-  // console.log("--------------------------------");
   
-  // 3 cas s'apres la doc api : //
-  // sous entend que le front deja regardé si user avait liké disliké avant ou non
-  // et la reponse 0 1 -1 est la synthése de toutes les possibilités
-  try{
-    //! cas 1 : userId a liké (et n'avait pas liké ou disliké avant)//
-    if (likeChange=== 1) {
-      Sauce.updateOne({_id: sauceId},{ $inc: {likes : +1}, $push: {usersLiked : userId}}) 
-        .then( () => res.status(200).json({message : " sauce likée"}))
-        .catch((error) => res.status(400).json({error}) )
+  let likeBefore=0;//il a déjà voté avant? 0=non 1=liké -1=disliké
+  Sauce.findOne({ _id : sauceId})
+  .then ( sauce =>{
+    // if (sauce.usersLiked.includes(userId))
+    if (sauce.usersLiked.find(id => id === userId)){
+      likeBefore = 1;
     }
-
-    //! cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)//
-    if (likeChange=== (-1)) {
-      Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : +1}, $push: {usersDisliked : userId}}) 
-        .then( () => res.status(200).json({message : " sauce dislikée"}))
-        .catch((error) => res.status(400).json({error}) )
+    if (sauce.usersDisliked.find(id => id === userId)){
+      likeBefore = -1;
     }
+    console.log("---------change/before-----------------------");
+    console.log(likeChange);
+    console.log(likeBefore);
 
-    //! cas 3 : userId avait liké ou disliké avant et vient d'annuler son like/dislike précedent//
-    if (likeChange=== 0) {
-      Sauce.findOne({_id: sauceId})
-        .then( (sauce) => {
-          if (sauce.usersLiked.includes(userId)) {//si son vote précédent == like
-            Sauce.updateOne({_id: sauceId},{ $inc: {likes : -1}, $pull: {usersLiked : userId}}) 
-        .then( () => res.status(200).json({message : "like retiré"}))//on le retire
-        .catch((error) => res.status(400).json({error}) )
-          }
-          if (sauce.usersDisliked.includes(userId)) {//si son vote précédent == dislike
-            Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : -1}, $pull: {usersDisliked : userId}}) 
-            .then( () => res.status(200).json({message : "dislike retiré"}))//on le retire
+        //! cas 1 : userId a liké (et n'avait pas liké ou disliké avant)//
+        if (likeChange=== 1 && likeBefore=== 0 ) {
+          Sauce.updateOne({_id: sauceId},{ $inc: {likes : +1}, $push: {usersLiked : userId}}) 
+            .then( () => res.status(200).json({message : " sauce likée"}))
             .catch((error) => res.status(400).json({error}) )
-          }
-        })
-    }
+        }
 
-  }
-  catch{error =>{
-    console.log(req.body);
-    console.log("probleme avec les like/dislike");
-    res.status(500).json({error});
-  }}
+        //! cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)//
+        if (likeChange=== (-1) && likeBefore=== 0 ) {
+          Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : +1}, $push: {usersDisliked : userId}}) 
+            .then( () => res.status(200).json({message : " sauce dislikée"}))
+            .catch((error) => res.status(400).json({error}) )
+        }
+
+        //! cas 3 : userId avait liké(lb=1) ou disliké(lb=-1) avant et vient d'annuler(lc=0) son like/dislike précedent//
+        if (likeChange=== 0 && likeBefore=== 1 ) {//il avait liké avant
+          Sauce.updateOne({_id: sauceId},{ $inc: {likes : -1}, $pull: {usersLiked : userId}}) 
+          .then( () => res.status(200).json({message : "like retiré"}))//on le retire
+          .catch((error) => res.status(400).json({error}) )
+        }
+        if (likeChange=== 0 && likeBefore=== -1 ) {//il avait disliké avant
+          Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : -1}, $pull: {usersDisliked : userId}}) 
+          .then( () => res.status(200).json({message : "dislike retiré"}))//on le retire
+          .catch((error) => res.status(400).json({error}) )
+        }
+        // les autres cas, pas possible via le front (quand 0et0 ou 1et1 ou -1 et -1)
+        if ( likeChange === likeBefore) {
+          console.log("(pas possible via front) ---> rien ne se passe ! ");
+          res.status(403).json({message : "on ne peut pas voter 2 fois ! "})
+        }
+
+          })
+  .catch((error) => res.status(404).json({error}) );
+
+
+
+  
+  // try{
+  //   //! cas 1 : userId a liké (et n'avait pas liké ou disliké avant)//
+  //   if (likeChange=== 1 && likeBefore=== 0 ) {
+  //     Sauce.updateOne({_id: sauceId},{ $inc: {likes : +1}, $push: {usersLiked : userId}}) 
+  //       .then( () => res.status(200).json({message : " sauce likée"}))
+  //       .catch((error) => res.status(400).json({error}) )
+  //   }
+
+  //   //! cas 2 : userId a disliké (et n'avait pas liké ou disliké avant)//
+  //   if (likeChange=== (-1) && likeBefore=== 0 ) {
+  //     Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : +1}, $push: {usersDisliked : userId}}) 
+  //       .then( () => res.status(200).json({message : " sauce dislikée"}))
+  //       .catch((error) => res.status(400).json({error}) )
+  //   }
+
+  //   //! cas 3 : userId avait liké ou disliké avant et vient d'annuler son like/dislike précedent//
+  //   if (likeChange=== 0  ) {
+  //     Sauce.findOne({_id: sauceId})
+  //       .then( (sauce) =>{ 
+  //         if (sauce.usersLiked.includes(userId)) {//si son vote précédent == like
+  //           Sauce.updateOne({_id: sauceId},{ $inc: {likes : -1}, $pull: {usersLiked : userId}}) 
+  //       .then( () => res.status(200).json({message : "like retiré"}))//on le retire
+  //       .catch((error) => res.status(400).json({error}) )
+  //         }
+  //         if (sauce.usersDisliked.includes(userId)) {//si son vote précédent == dislike
+  //           Sauce.updateOne({_id: sauceId},{ $inc: {dislikes : -1}, $pull: {usersDisliked : userId}}) 
+  //           .then( () => res.status(200).json({message : "dislike retiré"}))//on le retire
+  //           .catch((error) => res.status(400).json({error}) )
+  //         }
+  //       })
+  //   }
+  //   else{
+  //     console.log("Pas de changement");
+  //   } }
+  // catch{error =>{
+  //   console.log(req.body);
+  //   console.log("probleme avec les like/dislike");
+  //   res.status(500).json({error});
+  // }}
 
 }; // fin du exports.likeDislikeSauce
 
