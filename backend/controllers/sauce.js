@@ -38,10 +38,10 @@ exports.modifySauce = (req, res, next) => {
 
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
-  console.log("userId de demande");
-  console.log(sauceObject.userId);
-  console.log("idToken");
-  console.log(req.token.userId);
+  // console.log("userId de demande");
+  // console.log(sauceObject.userId);
+  // console.log("idToken");
+  // console.log(req.token.userId);
   
   const sauce = new Sauce({
     userId : sauceObject.userId,
@@ -137,12 +137,13 @@ exports.likeDislikeSauce = (req, res, next) => {
   const likeChange = req.body.like;//le code 0/1/-1 renvoyé par le front
   const userId = req.body.userId;//le user qui veut liker/disliker
   const sauceId = req.params.id;  //la sauce d'ou part la requete
-  console.log("--------------------------------");
-  console.log(likeChange);
-  console.log(userId);
-  console.log(sauceId);
-  console.log("--------------------------------");
-  // 3 cas s'apres la doc api : 
+  // console.log("--------------------------------");
+  // console.log(likeChange);
+  // console.log(userId);
+  // console.log(sauceId);
+  // console.log("--------------------------------");
+  
+  // 3 cas s'apres la doc api : //
   // sous entend que le front deja regardé si user avait liké disliké avant ou non
   // et la reponse 0 1 -1 est la synthése de toutes les possibilités
   try{
