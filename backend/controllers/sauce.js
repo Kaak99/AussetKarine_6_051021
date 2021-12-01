@@ -181,7 +181,7 @@ exports.likeDislikeSauce = (req, res, next) => {
     }
     
     //! les autres cas, pas possible via le front (quand 0et0 ou 1et1 ou -1 et -1)(et 1et-1  ou -1et1)//
-    if ( likeChange === likeBefore) {
+    if ( Math.abs(likeChange) === Math.abs(likeBefore)) {
       console.log("(pas possible via front) ---> rien ne se passe ! ");
       res.status(403).json({message : "on ne peut pas voter 2 fois ! "})
     }
